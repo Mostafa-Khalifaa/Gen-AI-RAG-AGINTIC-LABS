@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chef</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<main class="app-container">
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="brand">
+                <div>
+                    <h1>AI-Chef</h1>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Settings Panel -->
+    <div class="settings-panel">
+        <div class="setting-group">
+            <label for="creativity">Creativity Level</label>
+            <select id="creativity">
+                <option value="0.2">Strict</option>
+                <option value="0.7" selected>Normal</option>
+                <option value="1.2">Creative</option>
+            </select>
+        </div>
+        
+        <div class="setting-group">
+            <label for="length">Response Length</label>
+            <select id="length">
+                <option value="concise">Concise (Short)</option>
+                <option value="detailed" selected>Detailed (Long)</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Chat Area -->
+    <div class="chat-wrapper">
+        <div id="chat-box" class="chat-box">
+            <div class="message chef-message">
+                <div class="message-avatar"></div>
+                <div class="message-content">
+                    <div class="message-text">Hi,I am your Chef. What ingredients do you have in your kitchen today?</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Input Area -->
+    <div class="input-area">
+        <div class="input-section">
+            <div class="file-input-wrapper">
+                <input type="file" id="my-img" accept="image/*">
+                <label for="my-img" class="file-label">
+                    <span class="file-icon"></span>
+                    <span class="file-text">Image</span>
+                </label>
+            </div>
+            
+            <input type="text" id="user-input" placeholder="Tell me your ingredients..." class="message-input">
+            
+            <button class="send-btn" onclick="sendMessage()">
+                <span>Send</span>
+                <span class="send-icon">➤</span>
+            </button>
+        </div>
+    </div>
+</main>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>
