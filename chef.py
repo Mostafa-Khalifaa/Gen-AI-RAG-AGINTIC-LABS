@@ -15,7 +15,6 @@ class ChefChatbot:
         4. Once they choose, give them the recipe.
         """
         self.reset_chat()
-
     def reset_chat(self):
         self.my_memory = MemorySaver()
         self.my_config = {"configurable": {"thread_id": "current_session"}}
