@@ -5,6 +5,7 @@ import os
 from datetime import datetime
 
 tavily_client = TavilyClient()
+
 @tool
 def WebSearch(daignoses:str, location:str)->str:
     """search for the nearst hospital based on daignoses and location"""

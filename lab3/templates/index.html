@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart RAG Agent</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>📚 Customer Service RAG Agent</h1>
+        
+        <div class="upload-section">
+            <input type="file" id="pdfFile" accept=".pdf">
+            <button onclick="uploadPDF()">Upload & Initialize System</button>
+            <p id="uploadStatus"></p>
+        </div>
+
+        <div class="chat-section">
+            <div id="chatBox" class="chat-box"></div>
+            
+            <div class="input-area">
+                <input type="text" id="questionInput" placeholder="Type your question here..." disabled>
+                <button id="askBtn" onclick="askQuestion()" disabled>Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function uploadPDF() {
+            const fileInput = document.getElementById('pdfFile');
+            const statusText = document.getElementById('uploadStatus');
+            
+            if (!fileInput.files[0]) {
+                statusText.innerText = "Please select a file first!";
+                statusText.style.color = "red";
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+
+            statusText.innerText = "Uploading and processing...";
+            statusText.style.color = "blue";
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    statusText.innerText = result.message;
+                    statusText.style.color = "green";
+                    document.getElementById('questionInput').disabled = false;
+                    document.getElementById('askBtn').disabled = false;
+                } else {
+                    statusText.innerText = result.error;
+                    statusText.style.color = "red";
+                }
+            } catch (error) {
+                statusText.innerText = "Server connection error.";
+                statusText.style.color = "red";
+            }
+        }
+
+        async function askQuestion() {
+            const input = document.getElementById('questionInput');
+            const chatBox = document.getElementById('chatBox');
+            const question = input.value.trim();
+            
+            if (!question) return;
+
+            chatBox.innerHTML += `<div class="message user-msg"><p>${question}</p></div>`;
+            input.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            try {
+                const response = await fetch('/ask', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question: question })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    let sourcesHtml = "";
+                    if (result.sources && result.sources.length > 0) {
+                        sourcesHtml = `<details style="margin-top: 10px; font-size: 12px; color: #555;">
+                            <summary>View Sources (Context)</summary>
+                            <ul>`;
+                        result.sources.forEach((source, index) => {
+                            sourcesHtml += `<li><strong>Source ${index + 1}:</strong> ${source}</li>`;
+                        });
+                        sourcesHtml += `</ul></details>`;
+                    }
+                    
+                    chatBox.innerHTML += `<div class="message bot-msg">
+                        <p>${result.answer}</p>
+                        ${sourcesHtml}
+                    </div>`;
+                } else {
+                    chatBox.innerHTML += `<div class="message error-msg"><p>Error: ${result.error}</p></div>`;
+                }
+            } catch (error) {
+                chatBox.innerHTML += `<div class="message error-msg"><p>Server connection error.</p></div>`;
+            }
+            
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+</body>
+</html>
